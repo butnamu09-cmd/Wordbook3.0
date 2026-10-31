@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VocaMaster - 영어 단어장 & 퀴즈</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: #eef2ff;
+            --success: #10b981;
+            --success-light: #ecfdf5;
+            --danger: #ef4444;
+            --danger-light: #fef2f2;
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-sub: #64748b;
+            --border: #e2e8f0;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(79, 70, 229, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 12px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), #818cf8);
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 18px;
+            box-shadow: 0 3px 8px rgba(79,70,229,0.3);
+        }
+
+        .brand-title {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--text-main);
+        }
+
+        .tab-nav {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: #f1f5f9;
+            padding: 4px;
+            border-radius: var(--radius-md);
+            gap: 4px;
+        }
+
+        .tab-btn {
+            border: none;
+            background: transparent;
+            padding: 12px 16px;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-sub);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--primary), #6366f1);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .badge {
+            background: rgba(0,0,0,0.08);
+            color: var(--text-sub);
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 700;
+        }
+
+        .tab-btn.active .badge {
+            background: rgba(255, 255, 255, 0.25);
+            color: white;
+        }
+
+        main {
+            flex: 1;
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 16px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-size: 17px;
+            font-weight: 800;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-sub);
+            margin-bottom: 6px;
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            outline: none;
+            transition: all 0.2s;
+            background: #fff;
+        }
+
+        input[type="text"]:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3.5px rgba(79, 70, 229, 0.12);
+        }
+
+        .btn {
+            border: none;
+            padding: 14px 18px;
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #6366f1);
+            color: white;
+            width: 100%;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-sm {
+            padding: 8px 12px;
+            font-size: 13px;
+            border-radius: 8px;
+        }
+
+        .btn-ghost {
+            background: #f1f5f9;
+            color: var(--text-sub);
+        }
+
+        .btn-danger {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+
+        .word-item {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 16px;
+            border: 1px solid var(--border);
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .word-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .meaning-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .tag {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 8px;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .quiz-card {
+            text-align: center;
+            padding: 28px 20px;
+        }
+
+        .quiz-progress {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .quiz-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), #818cf8);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .quiz-prompt {
+            font-size: 32px;
+            font-weight: 800;
+            margin: 20px 0;
+            color: var(--text-main);
+            word-break: break-all;
+        }
+
+        .quiz-choices {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .choice-btn {
+            padding: 16px;
+            text-align: left;
+            background: var(--bg-main);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .choice-btn:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+
+        .shake {
+            animation: shake 0.4s ease-in-out;
+            border-color: var(--danger) !important;
+            background-color: var(--danger-light) !important;
+        }
+
+        .correct-flash {
+            border-color: var(--success) !important;
+            background-color: var(--success-light) !important;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .stat-box {
+            background: var(--bg-main);
+            padding: 14px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+        }
+
+        .stat-val {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .stat-lbl {
+            font-size: 12px;
+            color: var(--text-sub);
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        .breakdown-item {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .breakdown-item:last-child {
+            border-bottom: none;
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #0f172a;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 700;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        #toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-container">
+            <div class="brand">
+                <div class="brand-left">
+                    <div class="brand-icon">V</div>
+                    <div class="brand-title">VocaMaster</div>
+                </div>
+                <div style="font-size: 12px; font-weight: 700; color: var(--text-sub);" id="header-stat">단어장 상태</div>
+            </div>
+
+            <nav class="tab-nav">
+                <button class="tab-btn active" id="tab-btn-vocab" onclick="switchTab('vocab')">
+                    단어장 <span class="badge" id="vocab-count">0</span>
+                </button>
+                <button class="tab-btn" id="tab-btn-quiz" onclick="switchTab('quiz')">
+                    퀴즈 도전
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section id="tab-vocab" class="tab-content active">
+            <div class="card">
+                <div class="card-title">새 단어 등록</div>
+                <form id="word-form" onsubmit="handleAddWord(event)">
+                    <div class="form-group">
+                        <label>영어 단어</label>
+                        <input type="text" id="input-word" placeholder="예: book" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label>한국어 뜻 (쉼표로 구분하여 여러 개 입력)</label>
+                        <input type="text" id="input-meaning" placeholder="예: 책, 예약하다" required autocomplete="off">
+                    </div>
+                    <button type="submit" class="btn btn-primary">+ 단어 추가하기</button>
+                </form>
+            </div>
+
+            <div class="toolbar">
+                <input type="text" id="search-word" placeholder="단어 또는 뜻 검색..." oninput="renderVocabList()">
+                <button class="btn btn-ghost btn-sm" onclick="exportJSON()">내보내기</button>
+                <label class="btn btn-ghost btn-sm" style="cursor: pointer;">
+                    불러오기
+                    <input type="file" id="import-file" accept=".json" style="display: none;" onchange="importJSON(event)">
+                </label>
+            </div>
+
+            <div id="vocab-list"></div>
+        </section>
+
+        <section id="tab-quiz" class="tab-content">
+            <div id="quiz-setup" class="card">
+                <div class="card-title">퀴즈 옵션</div>
+                
+                <div class="form-group">
+                    <label>퀴즈 모드</label>
+                    <select id="quiz-mode">
+                        <option value="en-ko">영어 ➔ 한국어 뜻 맞히기</option>
+                        <option value="ko-en">한국어 뜻 ➔ 영어 맞히기</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>문제 출제 방식</label>
+                    <select id="quiz-format">
+                        <option value="subjective">주관식 (직접 입력)</option>
+                        <option value="choice">4지 선다형 (객관식)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>출제 대상</label>
+                    <select id="quiz-range">
+                        <option value="all">전체 단어 전체 무작위</option>
+                        <option value="wrong" id="option-wrong" disabled>지난 퀴즈 오답 재시험</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-primary" onclick="startQuiz()" style="margin-top: 10px;">퀴즈 시작하기</button>
+            </div>
+
+            <div id="quiz-active" class="card quiz-card" style="display: none;">
+                <div class="quiz-progress">
+                    <div class="quiz-progress-bar" id="quiz-progress-bar"></div>
+                </div>
+                <div style="font-size: 13px; font-weight: 700; color: var(--text-sub);" id="quiz-step">1 / 10</div>
+                
+                <div class="quiz-prompt" id="quiz-prompt-text">word</div>
+
+                <form id="quiz-subjective-form" onsubmit="submitSubjectiveAnswer(event)">
+                    <div class="form-group">
+                        <input type="text" id="quiz-user-input" placeholder="정답을 입력하고 엔터를 누르세요" autocomplete="off">
+                    </div>
+                    <button type="submit" class="btn btn-primary">정답 제출</button>
+                </form>
+
+                <div id="quiz-choice-container" class="quiz-choices" style="display: none;"></div>
+            </div>
+
+            <div id="quiz-result" class="card" style="display: none;">
+                <div class="card-title">퀴즈 결과 통계</div>
+                
+                <div class="stat-grid">
+                    <div class="stat-box">
+                        <div class="stat-val" id="res-total">0</div>
+                        <div class="stat-lbl">총 문제</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-val" style="color: var(--success);" id="res-correct">0</div>
+                        <div class="stat-lbl">맞힌 개수</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-val" id="res-accuracy">0%</div>
+                        <div class="stat-lbl">정답률</div>
+                    </div>
+                </div>
+
+                <div class="card-title" style="font-size: 15px; margin-top: 20px;">상세 채점 내역</div>
+                <div id="result-breakdown" style="max-height: 250px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 16px;"></div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <button class="btn btn-primary" onclick="resetQuiz()">다시하기</button>
+                    <button class="btn btn-danger" id="btn-retest" onclick="startWrongRetest()" style="display: none;">오답 재시험</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="toast">메시지</div>
+
+    <script>
+        const DEFAULT_WORDS = [
+            { id: '1', word: 'run', meanings: ['달리다', '운영하다', '작동하다'] },
+            { id: '2', word: 'book', meanings: ['책', '예약하다'] },
+            { id: '3', word: 'light', meanings: ['빛', '가벼운', '조명'] },
+            { id: '4', word: 'charming', meanings: ['매력적인'] }
+        ];
+
+        let vocabList = [];
+        let wrongWords = [];
+        let currentQuiz = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadVocab();
+            renderVocabList();
+        });
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            document.getElementById(`tab-btn-${tabName}`).classList.add('active');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+        }
+
+        function loadVocab() {
+            const data = localStorage.getItem('voca_master_data');
+            if (data) {
+                try { 
+                    vocabList = JSON.parse(data); 
+                } catch (e) { 
+                    vocabList = [...DEFAULT_WORDS]; 
+                }
+            } else {
+                vocabList = [...DEFAULT_WORDS];
+                saveVocab();
+            }
+            updateBadge();
+        }
+
+        function saveVocab() {
+            localStorage.setItem('voca_master_data', JSON.stringify(vocabList));
+            updateBadge();
+        }
+
+        function updateBadge() {
+            const count = vocabList.length;
+            document.getElementById('vocab-count').textContent = count;
+            document.getElementById('header-stat').textContent = `${count}개 단어 저장됨`;
+        }
+
+        function handleAddWord(e) {
+            e.preventDefault();
+            const wordInput = document.getElementById('input-word');
+            const meaningInput = document.getElementById('input-meaning');
+
+            const word = wordInput.value.trim();
+            const meanings = meaningInput.value
+                .split(',')
+                .map(m => m.trim())
+                .filter(m => m.length > 0);
+
+            if (!word || meanings.length === 0) return;
+
+            vocabList.unshift({
+                id: Date.now().toString(),
+                word,
+                meanings
+            });
+
+            saveVocab();
+            renderVocabList();
+
+            wordInput.value = '';
+            meaningInput.value = '';
+            showToast('새 단어가 추가되었습니다.');
+        }
+
+        function deleteWord(id) {
+            vocabList = vocabList.filter(item => item.id !== id);
+            saveVocab();
+            renderVocabList();
+            showToast('단어가 삭제되었습니다.');
+        }
+
+        function renderVocabList() {
+            const listEl = document.getElementById('vocab-list');
+            const search = document.getElementById('search-word').value.toLowerCase();
+            listEl.innerHTML = '';
+
+            const filtered = vocabList.filter(item => 
+                item.word.toLowerCase().includes(search) || 
+                item.meanings.some(m => m.toLowerCase().includes(search))
+            );
+
+            if (filtered.length === 0) {
+                listEl.innerHTML = `<div style="text-align: center; color: var(--text-sub); padding: 40px 0; font-weight: 600;">등록된 단어가 없습니다.</div>`;
+                return;
+            }
+
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'word-item';
+                card.innerHTML = `
+                    <div>
+                        <div class="word-title">${escapeHtml(item.word)}</div>
+                        <div class="meaning-tags">
+                            ${item.meanings.map(m => `<span class="tag">${escapeHtml(m)}</span>`).join('')}
+                        </div>
+                    </div>
+                    <div>
+                        <button class="btn btn-ghost btn-sm btn-danger" onclick="deleteWord('${item.id}')">삭제</button>
+                    </div>
+                `;
+                listEl.appendChild(card);
+            });
+        }
+
+        function startQuiz() {
+            if (vocabList.length === 0) {
+                showToast('퀴즈를 진행할 단어가 없습니다.');
+                return;
+            }
+
+            const mode = document.getElementById('quiz-mode').value;
+            const format = document.getElementById('quiz-format').value;
+            const range = document.getElementById('quiz-range').value;
+
+            let source = (range === 'wrong' && wrongWords.length > 0) ? wrongWords : vocabList;
+            
+            if (format === 'choice' && vocabList.length < 4) {
+                showToast('객관식은 최소 4개의 단어가 필요합니다.');
+                return;
+            }
+
+            const shuffled = [...source].sort(() => Math.random() - 0.5);
+
+            currentQuiz = {
+                mode,
+                format,
+                questions: shuffled,
+                index: 0,
+                score: 0,
+                results: []
+            };
+
+            document.getElementById('quiz-setup').style.display = 'none';
+            document.getElementById('quiz-result').style.display = 'none';
+            document.getElementById('quiz-active').style.display = 'block';
+
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = currentQuiz.questions[currentQuiz.index];
+            const total = currentQuiz.questions.length;
+            
+            document.getElementById('quiz-progress-bar').style.width = `${((currentQuiz.index) / total) * 100}%`;
+            document.getElementById('quiz-step').textContent = `${currentQuiz.index + 1} / ${total}`;
+
+            const isEnKo = currentQuiz.mode === 'en-ko';
+            document.getElementById('quiz-prompt-text').textContent = isEnKo ? q.word : q.meanings.join(', ');
+
+            const subForm = document.getElementById('quiz-subjective-form');
+            const choiceBox = document.getElementById('quiz-choice-container');
+
+            if (currentQuiz.format === 'subjective') {
+                subForm.style.display = 'block';
+                choiceBox.style.display = 'none';
+                const input = document.getElementById('quiz-user-input');
+                input.value = '';
+                input.focus();
+            } else {
+                subForm.style.display = 'none';
+                choiceBox.style.display = 'grid';
+                choiceBox.innerHTML = '';
+
+                const correctAns = isEnKo ? q.meanings[0] : q.word;
+                const distractors = vocabList
+                    .filter(item => item.id !== q.id)
+                    .sort(() => Math.random() - 0.5)
+                    .slice(0, 3)
+                    .map(item => isEnKo ? item.meanings[0] : item.word);
+
+                const choices = [correctAns, ...distractors].sort(() => Math.random() - 0.5);
+
+                choices.forEach(choice => {
+                    const btn = document.createElement('button');
+                    btn.className = 'choice-btn';
+                    btn.textContent = choice;
+                    btn.onclick = () => checkAnswer(choice, btn);
+                    choiceBox.appendChild(btn);
+                });
+            }
+        }
+
+        function submitSubjectiveAnswer(e) {
+            e.preventDefault();
+            const input = document.getElementById('quiz-user-input');
+            checkAnswer(input.value, input);
+        }
+
+        function checkAnswer(userAns, targetEl) {
+            const q = currentQuiz.questions[currentQuiz.index];
+            const isEnKo = currentQuiz.mode === 'en-ko';
+            
+            let isCorrect = false;
+            const cleanUser = cleanString(userAns);
+
+            if (isEnKo) {
+                isCorrect = q.meanings.some(m => cleanString(m) === cleanUser);
+            } else {
+                isCorrect = cleanString(q.word) === cleanUser;
+            }
+
+            const activeCard = document.getElementById('quiz-active');
+
+            if (isCorrect) {
+                currentQuiz.score++;
+                activeCard.classList.add('correct-flash');
+            } else {
+                activeCard.classList.add('shake');
+            }
+
+            currentQuiz.results.push({
+                item: q,
+                userAns: userAns.trim() || '(미입력)',
+                isCorrect
+            });
+
+            setTimeout(() => {
+                activeCard.classList.remove('correct-flash', 'shake');
+                currentQuiz.index++;
+
+                if (currentQuiz.index < currentQuiz.questions.length) {
+                    renderQuestion();
+                } else {
+                    finishQuiz();
+                }
+            }, 500);
+        }
+
+        function cleanString(str) {
+            return str ? str.toString().toLowerCase().replace(/[\s\.\,\?\!\-\_]/g, '') : '';
+        }
+
+        function finishQuiz() {
+            document.getElementById('quiz-active').style.display = 'none';
+            document.getElementById('quiz-result').style.display = 'block';
+
+            const total = currentQuiz.questions.length;
+            const accuracy = Math.round((currentQuiz.score / total) * 100);
+
+            document.getElementById('res-total').textContent = total;
+            document.getElementById('res-correct').textContent = currentQuiz.score;
+            document.getElementById('res-accuracy').textContent = `${accuracy}%`;
+
+            wrongWords = currentQuiz.results.filter(r => !r.isCorrect).map(r => r.item);
+            
+            const retestBtn = document.getElementById('btn-retest');
+            const optionWrong = document.getElementById('option-wrong');
+
+            if (wrongWords.length > 0) {
+                retestBtn.style.display = 'block';
+                optionWrong.disabled = false;
+            } else {
+                retestBtn.style.display = 'none';
+                optionWrong.disabled = true;
+            }
+
+            const bd = document.getElementById('result-breakdown');
+            bd.innerHTML = '';
+            currentQuiz.results.forEach((r, i) => {
+                const item = document.createElement('div');
+                item.className = 'breakdown-item';
+                
+                const color = r.isCorrect ? 'var(--success)' : 'var(--danger)';
+                const mark = r.isCorrect ? '⭕' : '❌';
+                const correctDisplay = currentQuiz.mode === 'en-ko' 
+                    ? r.item.meanings.join(', ') 
+                    : r.item.word;
+
+                item.innerHTML = `
+                    <div style="font-weight: 800; color: ${color};">
+                        ${mark} ${i + 1}. ${escapeHtml(r.item.word)} 
+                        <span style="font-weight: normal; color: var(--text-sub);">(${escapeHtml(r.item.meanings.join(', '))})</span>
+                    </div>
+                    <div style="margin-top: 4px; font-size: 13px;">
+                        제출한 답: <strong>${escapeHtml(r.userAns)}</strong> 
+                        ➔ 인정 정답: <strong style="color: var(--primary);">${escapeHtml(correctDisplay)}</strong>
+                    </div>
+                `;
+                bd.appendChild(item);
+            });
+        }
+
+        function resetQuiz() {
+            document.getElementById('quiz-result').style.display = 'none';
+            document.getElementById('quiz-setup').style.display = 'block';
+        }
+
+        function startWrongRetest() {
+            document.getElementById('quiz-range').value = 'wrong';
+            startQuiz();
+        }
+
+        function exportJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(vocabList, null, 2));
+            const a = document.createElement('a');
+            a.href = dataStr;
+            a.download = `VocaMaster_Backup_${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+            showToast('JSON 데이터 저장이 완료되었습니다.');
+        }
+
+        function importJSON(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    const imported = JSON.parse(event.target.result);
+                    if (Array.isArray(imported)) {
+                        vocabList = imported;
+                        saveVocab();
+                        renderVocabList();
+                        showToast('단어장 데이터를 불러왔습니다.');
+                    }
+                } catch (err) {
+                    showToast('유효하지 않은 백업 파일입니다.');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2500);
+        }
+
+        function escapeHtml(str) {
+            return str ? str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") : '';
+        }
+    </script>
+</body>
+</html>
+
+
+이건데
